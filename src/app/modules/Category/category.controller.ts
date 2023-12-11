@@ -1,10 +1,13 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createCategoryIntoDB } from "./category.service";
+import {
+  createCategoryIntoDB,
+  getAllCategoriesFromDB,
+} from "./category.service";
 
 const createCategory = catchAsync(async (req, res) => {
-  // create category
+  // create category into DB
   const result = await createCategoryIntoDB(req.body);
   // object destructuring
   const { _id, name } = await result.toObject();
@@ -17,4 +20,16 @@ const createCategory = catchAsync(async (req, res) => {
   });
 });
 
-export { createCategory };
+const getAllCategory = catchAsync(async (req, res) => {
+  // get all category from DB
+  const result = await getAllCategoriesFromDB();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Categories retrieved successfully",
+    data: result,
+  });
+});
+
+export { createCategory, getAllCategory };
