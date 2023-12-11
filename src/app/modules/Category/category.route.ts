@@ -1,9 +1,9 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { createCategoryValidationSchema } from "./category.validation";
 import { createCategory, getAllCategory } from "./category.controller";
 
-const router: Router = express.Router();
+const router: Router = Router();
 
 router.post(
   "/",
