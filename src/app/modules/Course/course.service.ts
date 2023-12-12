@@ -3,6 +3,7 @@ import { TCourse, TDetails } from "./course.interface";
 import Course from "./course.model";
 import AppError from "../../error/AppError";
 import httpStatus from "http-status";
+import Review from "../Review/review.model";
 
 // make course type Partial TCourse for durationInWeeks
 const createCourseIntoDB = async (course: Partial<TCourse>) => {
@@ -212,4 +213,68 @@ const getCourseWithReviewFromDB = async (courseId: string) => {
   return resultObj;
 };
 
-export { createCourseIntoDB, updateCourseIntoDB, getCourseWithReviewFromDB };
+const getBestRatedCourseFromDB = async () => {
+  const result = await Review.aggregate([
+    {
+      $group: {
+        _id: "$courseId",
+        averageRating: { $avg: "$rating" },
+        reviewCount: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { averageRating: -1 },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $lookup: {
+        from: "courses",
+        localField: "_id",
+        foreignField: "_id",
+        as: "course",
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        __v: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        course: {
+          // _id: 1,
+          // title: 1,
+          // instructor: 1,
+          // categoryId: 1,
+          // price: 1,
+          // tags: 1,
+          // startDate: 1,
+          // endDate: 1,
+          // language: 1,
+          // provider: 1,
+          // durationInWeeks: 1,
+          // details: 1,
+          __v: 0,
+          createdAt: 0,
+          updatedAt: 0,
+        },
+      },
+    },
+  ]);
+
+  const course = result[0].course[0];
+
+  return {
+    course: { ...course },
+    averageRating: result[0].averageRating,
+    reviewCount: result[0].reviewCount,
+  };
+};
+
+export {
+  createCourseIntoDB,
+  updateCourseIntoDB,
+  getCourseWithReviewFromDB,
+  getBestRatedCourseFromDB,
+};

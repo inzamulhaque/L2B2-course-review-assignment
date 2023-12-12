@@ -3,6 +3,7 @@ import validateRequest from "../../middlewares/validateRequest";
 import { createCourseValidationSchema } from "./course.validation";
 import {
   createCourse,
+  getBestRatedCourse,
   getCourseByIDWithReviews,
   updateCourse,
 } from "./course.controller";
@@ -23,5 +24,7 @@ router.put(
 );
 
 router.get("/courses/:courseId/reviews", getCourseByIDWithReviews);
+
+router.get("/course/best", getBestRatedCourse);
 
 export const CourseRoute = router;
