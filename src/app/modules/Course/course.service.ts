@@ -8,6 +8,13 @@ import Review from "../Review/review.model";
 // make course type Partial TCourse for durationInWeeks
 const createCourseIntoDB = async (course: Partial<TCourse>) => {
   const { startDate, endDate, details } = course;
+  // handling duration
+  if (course?.durationInWeeks) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "you can't set the duration manually",
+    );
+  }
 
   //   calculate course duration
   const newStartDate = new Date(startDate as string);
@@ -15,6 +22,15 @@ const createCourseIntoDB = async (course: Partial<TCourse>) => {
   const durationInTime = newEndDate.getTime() - newStartDate.getTime();
   //   calculate course duration in days
   const durationInDays = Math.round(durationInTime / (1000 * 3600 * 24));
+
+  // handle negative duration
+  if (!(durationInTime > 0)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Course starting date can't be greater than the course ending date",
+    );
+  }
+
   //  calculate course duration in weeks
   const durationInWeeks = Math.ceil(durationInDays / 7);
 
@@ -41,6 +57,13 @@ const updateCourseIntoDB = async (id: string, course: Partial<TCourse>) => {
 
   try {
     session.startTransaction();
+    // handling updating duration
+    if (courseRemainingData && courseRemainingData.durationInWeeks) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "you can't set the duration manually",
+      );
+    }
 
     // for calculate course duration
     if (
@@ -56,6 +79,15 @@ const updateCourseIntoDB = async (id: string, course: Partial<TCourse>) => {
       const newStartDate = new Date(startDate as string);
       const newEndDate = new Date(endDate as string);
       const durationInTime = newEndDate.getTime() - newStartDate.getTime();
+
+      // handle negative duration
+      if (!(durationInTime > 0)) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Course starting date can't be greater than the course ending date",
+        );
+      }
+
       //   calculate course duration in days
       const durationInDays = Math.round(durationInTime / (1000 * 3600 * 24));
       //  calculate course duration in weeks
@@ -243,18 +275,6 @@ const getBestRatedCourseFromDB = async () => {
         createdAt: 0,
         updatedAt: 0,
         course: {
-          // _id: 1,
-          // title: 1,
-          // instructor: 1,
-          // categoryId: 1,
-          // price: 1,
-          // tags: 1,
-          // startDate: 1,
-          // endDate: 1,
-          // language: 1,
-          // provider: 1,
-          // durationInWeeks: 1,
-          // details: 1,
           __v: 0,
           createdAt: 0,
           updatedAt: 0,
