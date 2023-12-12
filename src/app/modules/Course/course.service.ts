@@ -93,10 +93,18 @@ const updateCourseIntoDB = async (id: string, course: Partial<TCourse>) => {
     // updating course details
     if (details && Object.keys(details).length > 0) {
       const updateObject: Record<string, string> = {};
+
       (Object.keys(details) as (keyof TDetails)[])?.forEach((prop) => {
         const value = details[prop] as string;
         updateObject[`details.${prop}` as string] = value;
       });
+
+      // course level capitalize
+      if (updateObject["details.level"]) {
+        let level: string = updateObject["details.level"] as string;
+        level = (level as string).charAt(0).toUpperCase() + level.slice(1);
+        updateObject["details.level"] = level;
+      }
 
       const updateCourseDetailsInfo = await Course.findByIdAndUpdate(
         id,
