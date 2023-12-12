@@ -178,4 +178,38 @@ const updateCourseIntoDB = async (id: string, course: Partial<TCourse>) => {
   }
 };
 
-export { createCourseIntoDB, updateCourseIntoDB };
+const getCourseWithReviewFromDB = async (courseId: string) => {
+  const id = new mongoose.Types.ObjectId(courseId);
+
+  const result = await Course.aggregate([
+    { $match: { _id: id } },
+    {
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "courseId",
+        as: "reviews",
+      },
+    },
+    {
+      $project: {
+        __v: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        reviews: {
+          __v: 0,
+          createdAt: 0,
+          updatedAt: 0,
+        },
+      },
+    },
+  ]);
+
+  const resultObj = {
+    course: result[0],
+  };
+
+  return resultObj;
+};
+
+export { createCourseIntoDB, updateCourseIntoDB, getCourseWithReviewFromDB };

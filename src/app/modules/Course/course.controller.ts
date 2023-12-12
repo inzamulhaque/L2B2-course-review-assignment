@@ -1,7 +1,11 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createCourseIntoDB, updateCourseIntoDB } from "./course.service";
+import {
+  createCourseIntoDB,
+  getCourseWithReviewFromDB,
+  updateCourseIntoDB,
+} from "./course.service";
 
 const createCourse = catchAsync(async (req, res) => {
   // create course into DB
@@ -28,4 +32,17 @@ const updateCourse = catchAsync(async (req, res) => {
   });
 });
 
-export { createCourse, updateCourse };
+const getCourseByIDWithReviews = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  // get course with reviews
+  const result = await getCourseWithReviewFromDB(courseId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Course and Reviews retrieved successfully",
+    data: result,
+  });
+});
+
+export { createCourse, updateCourse, getCourseByIDWithReviews };

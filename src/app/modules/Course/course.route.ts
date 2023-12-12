@@ -1,7 +1,11 @@
 import { Router } from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { createCourseValidationSchema } from "./course.validation";
-import { createCourse, updateCourse } from "./course.controller";
+import {
+  createCourse,
+  getCourseByIDWithReviews,
+  updateCourse,
+} from "./course.controller";
 import { updateCategoryValidationSchema } from "../Category/category.validation";
 
 const router: Router = Router();
@@ -17,5 +21,7 @@ router.put(
   validateRequest(updateCategoryValidationSchema),
   updateCourse,
 );
+
+router.get("/courses/:courseId/reviews", getCourseByIDWithReviews);
 
 export const CourseRoute = router;
