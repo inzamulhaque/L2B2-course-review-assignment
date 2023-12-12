@@ -6,7 +6,16 @@ const createCourseTagsValidationSchema = z.object({
 });
 
 const createCourseDetailsValidationSchema = z.object({
-  level: z.enum(["Beginner", "Intermediate", "Advanced"]),
+  level: z
+    .string()
+    .transform((val) => {
+      const lowerVal = val.toLowerCase();
+      if (["beginner", "intermediate", "advanced"].includes(lowerVal)) {
+        return lowerVal.charAt(0).toUpperCase() + lowerVal.slice(1);
+      }
+      return val;
+    })
+    .refine((val) => ["Beginner", "Intermediate", "Advanced"].includes(val)),
   description: z.string(),
 });
 
