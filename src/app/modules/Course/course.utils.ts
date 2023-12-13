@@ -13,32 +13,27 @@ const getAllCourseQuery = async (query: Record<string, unknown>) => {
   const durationInWeeks = Number(query?.durationInWeeks ?? 8);
   const level = query?.level ?? "Intermediate";
 
-  const priceRange = Course.find({
-    price: { $lte: maxPrice, $gte: minPrice },
-  });
-
-  const tagsName = priceRange.find({ "tags.name": tags });
-
-  const languageData = tagsName.find({
-    language,
-  });
-
-  const providerData = languageData.find({
-    provider,
-  });
-
-  const durationInWeeksData = providerData.find({
-    durationInWeeks,
-  });
-
-  const levelData = durationInWeeksData.find({
-    "details.level": level,
-  });
-
-  const pagination = await levelData
-    .skip(skip)
-    .limit(limit)
-    .select("-__v -createdAt -updatedAt");
+  const data = await Course.aggregate([
+    {
+      $match: {
+        price: { $lte: maxPrice, $gte: minPrice },
+        "tags.name": tags,
+        language,
+        provider,
+        durationInWeeks,
+        "details.level": level,
+      },
+    },
+    {
+      $project: {
+        __v: 0,
+        createdAt: 0,
+        updatedAt: 0,
+      },
+    },
+    { $skip: skip },
+    { $limit: limit },
+  ]);
 
   const total = await Course.countDocuments();
 
@@ -48,7 +43,7 @@ const getAllCourseQuery = async (query: Record<string, unknown>) => {
     total,
   };
 
-  return { meta, data: pagination };
+  return { meta, data };
 };
 
 export { getAllCourseQuery };
