@@ -1,10 +1,5 @@
 import { Response } from "express";
-
-export type TMeta = {
-  page: number;
-  limit: number;
-  total: number;
-};
+import { TMeta } from "../interface/meta";
 
 type TResponse<T> = {
   success: boolean;

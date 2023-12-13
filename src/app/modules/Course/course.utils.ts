@@ -1,4 +1,4 @@
-import { TMeta } from "../../utils/sendResponse";
+import { TMeta } from "../../interface/meta";
 import Course from "./course.model";
 
 const getAllCourseQuery = async (query: Record<string, unknown>) => {
