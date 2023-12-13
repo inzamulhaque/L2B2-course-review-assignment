@@ -5,6 +5,7 @@ import AppError from "../../error/AppError";
 import httpStatus from "http-status";
 import Review from "../Review/review.model";
 import { getAllCourseQuery } from "./course.utils";
+import { NextFunction } from "express";
 
 // make course type Partial TCourse for durationInWeeks
 const createCourseIntoDB = async (course: Partial<TCourse>) => {
@@ -58,7 +59,11 @@ const getAllCourseFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 
-const updateCourseIntoDB = async (id: string, course: Partial<TCourse>) => {
+const updateCourseIntoDB = async (
+  id: string,
+  course: Partial<TCourse>,
+  next: NextFunction,
+) => {
   const { tags, details, ...courseRemainingData } = course;
   const session = await mongoose.startSession();
 
@@ -214,42 +219,49 @@ const updateCourseIntoDB = async (id: string, course: Partial<TCourse>) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(httpStatus.BAD_REQUEST, "Failed to update course");
+    next(error);
   }
 };
 
-const getCourseWithReviewFromDB = async (courseId: string) => {
-  const id = new mongoose.Types.ObjectId(courseId);
+const getCourseWithReviewFromDB = async (
+  courseId: string,
+  next: NextFunction,
+) => {
+  try {
+    const id = new mongoose.Types.ObjectId(courseId);
 
-  const result = await Course.aggregate([
-    { $match: { _id: id } },
-    {
-      $lookup: {
-        from: "reviews",
-        localField: "_id",
-        foreignField: "courseId",
-        as: "reviews",
+    const result = await Course.aggregate([
+      { $match: { _id: id } },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "courseId",
+          as: "reviews",
+        },
       },
-    },
-    {
-      $project: {
-        __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        reviews: {
+      {
+        $project: {
           __v: 0,
           createdAt: 0,
           updatedAt: 0,
+          reviews: {
+            __v: 0,
+            createdAt: 0,
+            updatedAt: 0,
+          },
         },
       },
-    },
-  ]);
+    ]);
 
-  const resultObj = {
-    course: result[0],
-  };
+    const resultObj = {
+      course: result[0],
+    };
 
-  return resultObj;
+    return resultObj;
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getBestRatedCourseFromDB = async () => {

@@ -1,7 +1,7 @@
 import { ZodError, ZodIssue } from "zod";
 import { TZodValidationError } from "../interface/zodError";
 
-const ZodValidationError = (err: ZodError): TZodValidationError => {
+const handleZodValidationError = (err: ZodError): TZodValidationError => {
   const generateErrorMessage = (issues: ZodIssue[]) => {
     const errorMessageArray = issues?.map((issue: ZodIssue) => {
       const errorName = issue.path[issue.path.length - 1];
@@ -26,4 +26,4 @@ const ZodValidationError = (err: ZodError): TZodValidationError => {
   return errorObject;
 };
 
-export default ZodValidationError;
+export default handleZodValidationError;

@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler } from "express";
-import { ZodError } from "zod";
-import ZodValidationError from "../error/ZodError";
+import { ZodError, object } from "zod";
+import handleZodValidationError from "../error/handleZodError";
+import handleCastError from "../error/handleCastError";
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
@@ -12,7 +13,15 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let stack = err?.stack;
 
   if (err instanceof ZodError) {
-    const error = ZodValidationError(err);
+    const error = handleZodValidationError(err);
+    message = error?.message;
+    errorMessage = error?.errorMessage;
+    errorDetails = error?.errorDetails;
+    stack = error?.stack;
+  }
+
+  if (err?.name === "CastError") {
+    const error = handleCastError(err);
     message = error?.message;
     errorMessage = error?.errorMessage;
     errorDetails = error?.errorDetails;

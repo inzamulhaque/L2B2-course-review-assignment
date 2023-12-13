@@ -8,6 +8,7 @@ import {
   getCourseWithReviewFromDB,
   updateCourseIntoDB,
 } from "./course.service";
+import { NextFunction } from "express";
 
 const createCourse = catchAsync(async (req, res) => {
   // create course into DB
@@ -34,10 +35,10 @@ const getAllCourse = catchAsync(async (req, res) => {
   });
 });
 
-const updateCourse = catchAsync(async (req, res) => {
+const updateCourse = catchAsync(async (req, res, next: NextFunction) => {
   const { courseId } = req.params;
   // update course into DB
-  const result = await updateCourseIntoDB(courseId, req.body);
+  const result = await updateCourseIntoDB(courseId, req.body, next);
 
   sendResponse(res, {
     success: true,
@@ -47,18 +48,20 @@ const updateCourse = catchAsync(async (req, res) => {
   });
 });
 
-const getCourseByIDWithReviews = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
-  // get course with reviews
-  const result = await getCourseWithReviewFromDB(courseId);
+const getCourseByIDWithReviews = catchAsync(
+  async (req, res, next: NextFunction) => {
+    const { courseId } = req.params;
+    // get course with reviews
+    const result = await getCourseWithReviewFromDB(courseId, next);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "Course and Reviews retrieved successfully",
-    data: result,
-  });
-});
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Course and Reviews retrieved successfully",
+      data: result,
+    });
+  },
+);
 
 const getBestRatedCourse = catchAsync(async (req, res) => {
   // get best rated course
