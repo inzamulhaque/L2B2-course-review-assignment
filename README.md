@@ -534,9 +534,9 @@ If you need to run this application locally so follow this process.
 
 Clone this application from GitHub. using this code:
 
-`git clone https://github.com/inzamulhaque/mongoose-assignment2-apollo-level2.git`  
+`git clone https://github.com/Porgramming-Hero-web-course/l2b2a3-course-review-inzamulhaque.git`  
 Or  
-`git clone git@github.com:inzamulhaque/mongoose-assignment2-apollo-level2.git`
+`git clone git@github.com:Porgramming-Hero-web-course/l2b2a3-course-review-inzamulhaque.git`
 
 If applications are cloned successfully applications open with VSCode or author text editor. Open the terminal or command prompt at this project. Install all necessary dependencies.  
 For installing all dependencies run this command:  
