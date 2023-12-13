@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import {
   createCourseIntoDB,
+  getAllCourseFromDB,
   getBestRatedCourseFromDB,
   getCourseWithReviewFromDB,
   updateCourseIntoDB,
@@ -17,6 +18,19 @@ const createCourse = catchAsync(async (req, res) => {
     statusCode: httpStatus.CREATED,
     message: "Course created successfully",
     data: result,
+  });
+});
+
+const getAllCourse = catchAsync(async (req, res) => {
+  // get all course from DB
+  const { meta, data } = await getAllCourseFromDB(req.query);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Courses retrieved successfully",
+    meta,
+    data,
   });
 });
 
@@ -60,6 +74,7 @@ const getBestRatedCourse = catchAsync(async (req, res) => {
 
 export {
   createCourse,
+  getAllCourse,
   updateCourse,
   getCourseByIDWithReviews,
   getBestRatedCourse,

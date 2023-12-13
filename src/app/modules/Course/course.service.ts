@@ -4,6 +4,7 @@ import Course from "./course.model";
 import AppError from "../../error/AppError";
 import httpStatus from "http-status";
 import Review from "../Review/review.model";
+import { getAllCourseQuery } from "./course.utils";
 
 // make course type Partial TCourse for durationInWeeks
 const createCourseIntoDB = async (course: Partial<TCourse>) => {
@@ -48,6 +49,12 @@ const createCourseIntoDB = async (course: Partial<TCourse>) => {
   const result = await Course.findById(newCourse._id).select(
     "-__v -createdAt -updatedAt",
   );
+  return result;
+};
+
+const getAllCourseFromDB = async (query: Record<string, unknown>) => {
+  const result = await getAllCourseQuery(query);
+
   return result;
 };
 
@@ -285,15 +292,18 @@ const getBestRatedCourseFromDB = async () => {
 
   const course = result[0].course[0];
 
-  return {
+  const resultObje = {
     course: { ...course },
     averageRating: result[0].averageRating,
     reviewCount: result[0].reviewCount,
   };
+
+  return resultObje;
 };
 
 export {
   createCourseIntoDB,
+  getAllCourseFromDB,
   updateCourseIntoDB,
   getCourseWithReviewFromDB,
   getBestRatedCourseFromDB,
